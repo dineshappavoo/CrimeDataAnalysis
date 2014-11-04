@@ -80,7 +80,7 @@ public class CrimeDataAnalysis {
 		//conf.set("inParameter", toString(args));
 		//Job job = new Job(conf, "wordcount");
 		Job job = new Job();
-		
+
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
 		job.setJarByClass(CrimeDataAnalysis.class);
@@ -96,15 +96,4 @@ public class CrimeDataAnalysis {
 
 		job.waitForCompletion(true);
 	}
-
-	private static String toString(String[] list)
-	{
-		String ret="";
-		for(int i=2;i<list.length;i++)
-		{
-			ret=ret+list[i]+" ";
-		}
-		return ret;
-	}
-
 }
