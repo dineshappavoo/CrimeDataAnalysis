@@ -1,0 +1,85 @@
+Crime Data Analysis
+===================
+
+README.md
+
+
+
+
+$cd /home/hadoop/logs/
+
+$vi hadoop-hadoop-namenode-cshdfs.utdallas.edu.log
+
+
+Single File:
+
+2014-11-07 16:19:44,274 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /users/dxa132330/input_files/data/2013-04-north-yorkshire-street.csv is closed by DFSClient_NONMAPREDUCE_-1334799364_1
+2014-11-07 16:19:44,278 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /users/dxa132330/input_files/data/2012-10-cumbria-street.csv. blk_-4822710052353058098_198704
+2014-11-07 16:19:44,291 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* addStoredBlock: blockMap updated: 10.176.92.132:50010 is added to blk_-4822710052353058098_198704 size 730409
+
+2014-11-07 16:19:44,292 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /users/dxa132330/input_files/data/2012-10-cumbria-street.csv is closed by DFSClient_NONMAPREDUCE_-1334799364_1
+2014-11-07 16:19:44,295 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /users/dxa132330/input_files/data/2011-07-dyfed-powys-street.csv. blk_7458512707128328927_198705
+2014-11-07 16:19:44,305 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* addStoredBlock: blockMap updated: 10.176.92.132:50010 is added to blk_7458512707128328927_198705 size 488091
+
+
+Consolidated File:
+
+2014-11-07 16:26:06,047 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /users/dxa132330/input_files/bxp/consolidated.csv. blk_-4194462014754229982_198725
+2014-11-07 16:26:06,715 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* addStoredBlock: blockMap updated: 10.176.92.132:50010 is added to blk_-4194462014754229982_198725 size 67108864
+2014-11-07 16:26:06,716 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /users/dxa132330/input_files/bxp/consolidated.csv. blk_-3910068099102587846_198725
+2014-11-07 16:26:07,560 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* addStoredBlock: blockMap updated: 10.176.92.133:50010 is added to blk_-3910068099102587846_198725 size 67108864
+2014-11-07 16:26:07,561 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /users/dxa132330/input_files/bxp/consolidated.csv. blk_-4807033042029268132_198725
+2014-11-07 16:26:08,556 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* addStoredBlock: blockMap updated: 10.176.92.131:50010 is added to blk_-4807033042029268132_198725 size 67108864
+2014-11-07 16:26:08,557 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* allocateBlock: /users/dxa132330/input_files/bxp/consolidated.csv. blk_-8386110256287029159_198725
+2014-11-07 16:26:08,906 INFO org.apache.hadoop.hdfs.StateChange: BLOCK* addStoredBlock: blockMap updated: 10.176.92.132:50010 is added to blk_-8386110256287029159_198725 size 36426408
+2014-11-07 16:26:08,907 INFO org.apache.hadoop.hdfs.StateChange: Removing lease on  /users/dxa132330/input_files/bxp/consolidated.csv from client DFSClient_NONMAPREDUCE_-2116871633_1
+2014-11-07 16:26:08,907 INFO org.apache.hadoop.hdfs.StateChange: DIR* completeFile: /users/dxa132330/input_files/bxp/consolidated.csv is closed by DFSClient_NONMAPREDUCE_-2116871633_1
+
+
+
+$vi job_201411071216_0058_conf.xml
+
+Only one copy available
+
+property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>dfs.namenode.replication.work.multiplier.per.iteration</name><value>2</value></property>
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>dfs.replication.max</name><value>512</value></property>
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>mapred.job.tracker.persist.jobstatus.active</name><valu
+
+
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>dfs.replication.min</name><value>1</value></property>
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>mapred.submit.replication</name><value>10</value></property>
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>fs.har.impl</name><value>org.apache.hadoop.fs.HarFileSystem</value></property>
+
+
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>dfs.replication</name><value>1</value></property>
+<property><!--Loaded from /home/hadoop/mapred/local-hadoop/jobTracker/job_201411071216_0058.xml--><name>fs.checkpoint.edits.dir</name><value>${fs.checkpoint.dir}</value></property>
+
+
+Introduction:
+Purpose:
+MapReduce program to compute the total crime incidents of each crime type in each region. Crime location is defined on a coordinate system (East, North). 
+    1. Under different settings, study Hadoop behaviors from its logs
+    2. Study about the distribution of input files and how to control the mapper and reducer tasks
+    
+
+Settings:
+
+Different region settings
+    One large input file or many small input files
+        Provide a single file with a very large data set and see how Hadoop partition the file and 
+    place them on the slave nodes
+        Provide a large number of smaller files (of different sizes)
+        In this exploration, you will generate your own HDFS files which may flood our disk. 
+    Different number of mapper tasks (defined through InputFormat)
+    Different number of reducer tasks (JobConf.setNumReduceTasks(int))
+    Introduce errors in a couple of input files
+
+Region definition:
+     Crime location is defined on a coordinate system (East, North)
+        East and North are defined by a 5-digit numerical value
+        Region definition 1: use the first digit of the coordinates only to define a region 
+            (5xxxx, 7xxxx), (5xxxx, 3xxxx), (8xxxx, 6xxxx), each is one region
+            Supposedly there are 100 regions, but not all the numbers appear in the files
+        Region definition 2: use the first three digits of the coordinates to define a region 
+            (535xx, 726xx) is one region
+        Consider other region definitions
