@@ -5,10 +5,13 @@ package com.crime.analysis;
 
 import java.io.IOException;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -22,7 +25,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  * @author Dinesh Appavoo
  *
  */
-public class CrimeDataAnalysis {
+public class CrimeDataAnalysisSingleDigitRegion {
 
 
 
@@ -47,7 +50,7 @@ public class CrimeDataAnalysis {
 					if(crimeData.length>7)
 					{
 						if((crimeType = crimeData[7].trim()) !="")
-							crimeType = String.valueOf(crimeType);
+							crimeType = String.valueOf(crimeType.charAt(0));
 					}
 				}catch(Exception e)
 				{
@@ -55,8 +58,10 @@ public class CrimeDataAnalysis {
 				}
 
 				try{
-					easternRegionCode = crimeData[4].trim();
-					northernRegionCode = crimeData[5].trim();
+					if((easternRegionCode = crimeData[4].trim()) !="")
+						easternRegionCode = String.valueOf(easternRegionCode.charAt(0));
+					if((northernRegionCode = crimeData[5].trim()) !="")
+						northernRegionCode = String.valueOf(northernRegionCode.charAt(0));
 
 					key_word = new Text(easternRegionCode+","+northernRegionCode+","+crimeType);
 
@@ -102,11 +107,13 @@ public class CrimeDataAnalysis {
 
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
-		job.setJarByClass(CrimeDataAnalysis.class);
+		job.setJarByClass(CrimeDataAnalysisSingleDigitRegion.class);
 		job.setMapperClass(Map.class);
 		job.setCombinerClass(Reduce.class);
 		job.setReducerClass(Reduce.class);
 
+		job.setNumReduceTasks(3);
+		TextInputFormat.setMaxInputSplitSize(job,20000000);
 		job.setInputFormatClass(TextInputFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
 
@@ -114,5 +121,8 @@ public class CrimeDataAnalysis {
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
 		job.waitForCompletion(true);
+
+
+		
 	}
 }

@@ -22,7 +22,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
  * @author Dinesh Appavoo
  *
  */
-public class CrimeDataAnalysis {
+public class CrimeDataAnalysisThreeDigit {
 
 
 
@@ -47,7 +47,7 @@ public class CrimeDataAnalysis {
 					if(crimeData.length>7)
 					{
 						if((crimeType = crimeData[7].trim()) !="")
-							crimeType = String.valueOf(crimeType);
+							crimeType = String.valueOf(crimeType.charAt(0));
 					}
 				}catch(Exception e)
 				{
@@ -55,8 +55,10 @@ public class CrimeDataAnalysis {
 				}
 
 				try{
-					easternRegionCode = crimeData[4].trim();
-					northernRegionCode = crimeData[5].trim();
+					if((easternRegionCode = crimeData[4].trim()) !="")
+						easternRegionCode = easternRegionCode.substring(0, 3);
+					if((northernRegionCode = crimeData[5].trim()) !="")
+						northernRegionCode = northernRegionCode.substring(0,3);
 
 					key_word = new Text(easternRegionCode+","+northernRegionCode+","+crimeType);
 
@@ -102,7 +104,7 @@ public class CrimeDataAnalysis {
 
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
-		job.setJarByClass(CrimeDataAnalysis.class);
+		job.setJarByClass(CrimeDataAnalysisThreeDigit.class);
 		job.setMapperClass(Map.class);
 		job.setCombinerClass(Reduce.class);
 		job.setReducerClass(Reduce.class);
